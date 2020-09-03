@@ -85,3 +85,20 @@ const options = {
     ],
 };
 
+const redrawSelections = () => {
+    let page = pages[pageIndex];
+    // Set text
+    $('#navigation-label').text(page);
+    //Set images
+    if (pageIndex<4) {
+        $('#textboxes').addClass('invisible');
+        $('#triple-selector').removeClass('invisible');
+        $('.selector > img').each(function(index) {
+            $(this).attr('src', `${option[page][index].src}`);
+        });
+    } else{
+        $('#textboxes').removeClass('invisible');
+        $('#triple-selector').addClass('invisible');
+        $('#text-input').val(current[page]);
+    }
+};
