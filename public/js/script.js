@@ -195,5 +195,47 @@ $(()=> {
         // Go to previous page
         pageIndex = (pageIndex - 1 + pages.length) % pages.length;
         redrawSelections();
-    })
-})
+    });
+
+    $('#text-input').on('input', function() {
+        let currentEdit = pages[pageIndex];
+        current[currentEdit] = $(this).val();
+        $(`#${currentEdit}`).text(current[currentEdit]);
+      });
+    
+    $('#add-new').on('click', function() {
+        current = Object.assign({}, defaults);
+        drawStrip();
+    });
+    
+    $('#save-button').on('click', function() {
+    const stripToCreate = {
+        strip: {
+        head: current.head,
+        body: current.body,
+        bubbleType: current.bubble,
+        background: current.background,
+        bubbleText: current.text,
+        caption: current.caption
+        }
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: '/strips',
+        data: JSON.stringify(stripToCreate),
+        success: function(body) {
+          addStrip(body.strip);
+        },
+        dataType: 'json',
+        contentType: 'application/json',
+      });
+    });
+
+    $('ul').on('click', '.strip-button', function() {
+        let id = $(this).attr('id').split('-')[2];
+        let strip = strips.find((strip) => strip.id === Number(id));
+        current = strip;
+        drawStrip();
+    });
+});
