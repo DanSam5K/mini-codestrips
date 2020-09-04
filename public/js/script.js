@@ -102,3 +102,33 @@ const redrawSelections = () => {
         $('#text-input').val(current[page]);
     }
 };
+
+const redrawText = () => {
+    $('#text').text(current.text);
+    $('#caption').text(current.caption);
+};
+
+const populateStrips = () => {
+    strips.forEach((strip) => {
+        $('ul').append(`<li id="strip-button-${strip.id}" class="button strip-button">${strip.caption}</li>`);
+    });
+};
+
+const addStrip = (newStrip) => {
+    $('ul').append(`<li id="strip-button-${newStrip.id}" class="button strip-button">${newStrip.caption}</li>`);
+    strips.push({
+        head: newStrip.head,
+        body: newStrip.body,
+        bubble: newStrip.bubble_type,
+        background: newStrip.background,
+        text: newStrip.bubble_text,
+        caption: newStrip.caption,
+        id: newStrip.id,
+    });
+};
+
+const findInArrayByName = (arr, name) => {
+    return arr.find((element) => {
+        return element.name === name;
+    });
+};
