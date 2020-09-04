@@ -132,3 +132,68 @@ const findInArrayByName = (arr, name) => {
         return element.name === name;
     });
 };
+
+const drawStrip = () => {
+    $('#head').attr('src', `${findInArrayByName(options.head, current.head).src}`);
+    $('#body').attr('src', `${findInArrayByName(options.body, current.body).src}`);
+    $('#bubble').attr('src', `${findInArrayByName(options.bubble, current.bubble).src}`);
+    $('#background').attr('src', `${findInArrayByName(options.background, current.background).src}`);
+    $('.display-container').css('background-color', `${findInArrayByName(options.background, current.background).bgColor}`);
+    redrawText();
+};
+
+const getStrips = () => {
+    $.get('/strips', function(data) {
+        strips = data.strips.map((stripFromDb) => {
+            return {
+                head: stripFromDb.head,
+                body: stripFromDb.body,
+                bubble: stripFromDb.bubble_type,
+                background: stripFromDb.background,
+                text: stripFromDb.bubble_text,
+                caption: stripFromDb.caption,
+                id: stripFromDb.id,
+            }
+        });
+        populateStrips();
+    });
+};
+
+$(()=> {
+    getStrips();
+    
+    // Handle selection mapping
+    $('.selector').on('mousedown', function() {
+        $('.selector').removeClass('selected');
+        $(this).addClass('selected');
+    });
+
+    // Set image on page
+    $('.selector').on('mousedown', function() {
+        let index = $(this).attr('id').split('-')[1] - 1;
+        let selector = pages[pageIndex];
+        let clickedObj = options[selector][index];
+        $(`#${selector}`).attr('src', `${clickedObj.src}`);
+        current[selector] = clickedObj.name;
+        if (selector === 'background') {
+            $('.display-container').css('background-color', clickedObj.bgcolor);
+        }
+        if (selector === 'bubble' && clickedObj.name === 'sound') {
+            $(`#${selector}`).addClass('effect');
+        } else {
+            $(`#${selector}`).removeClass('effect')
+        }
+    });
+
+    $('#right-arrow').on('click', function() {
+        // Go to next page
+        pageIndex = (pageIndex + 1) % pages.length;
+        redrawSelections();
+    });
+
+    $('#left-arrow').on('click', function() {
+        // Go to previous page
+        pageIndex = (pageIndex - 1 + pages.length) % pages.length;
+        redrawSelections();
+    })
+})
